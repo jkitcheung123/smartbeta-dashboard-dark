@@ -17,13 +17,13 @@ h1{font-size:18px;font-weight:700;color:#e2e8f0;margin-bottom:2px}
 .tab-content[hidden]{display:none}
 .comp-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;table-layout:fixed;background:#131a2b;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.4)}
 .comp-table th{background:#1e2a40;color:#5a6580;font-weight:600;padding:8px 7px;text-align:center;position:sticky;top:0;font-size:11px;overflow:hidden;text-overflow:ellipsis;border-bottom:2px solid #2a3450}
-.comp-table td{padding:7px 6px;border-bottom:1px solid #1e2a40;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;color:#2d3748}
+.comp-table td{padding:7px 6px;border-bottom:1px solid #1e2a40;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;color:#e2e8f0}
 .comp-table tr:hover{background:rgba(74,158,255,0.06)}
 .comp-table tr:last-child td{border-bottom:none}
 .comp-table .num{text-align:right;font-variant-numeric:tabular-nums}
 .idx-name{font-weight:600;color:#e2e8f0;font-size:12px}
 .idx-code{font-size:10px;color:#5a6580;margin-top:1px}
-.positive{color:#ff6b6b;font-weight:600} .drop{color:#5fe89e;font-weight:600} .neutral{color:#5a6580}
+.positive{color:#ff6b6b;font-weight:600} .drop{color:#5fe89e;font-weight:600} .neutral{color:#a0aec0}
 .rise{color:#ff6b6b;font-weight:500}
 .btn-detail{background:#4a9eff;color:#fff;border:none;padding:4px 12px;border-radius:4px;font-size:11px;cursor:pointer;transition:all .15s;font-weight:500}
 .btn-detail:hover{background:#3182d6;box-shadow:0 2px 6px rgba(74,158,255,0.25)}
@@ -43,7 +43,7 @@ h1{font-size:18px;font-weight:700;color:#e2e8f0;margin-bottom:2px}
 .section strong{color:#ed8936}
 table{width:100%;border-collapse:collapse;font-size:11px;margin-top:4px}
 th{background:#1e2a40;color:#5a6580;font-weight:600;padding:6px 7px;text-align:left;font-size:11px}
-td{padding:6px 7px;border-bottom:1px solid #1e2a40;color:#2d3748}
+td{padding:6px 7px;border-bottom:1px solid #1e2a40;color:#e2e8f0}
 tr:last-child td{border-bottom:none}
 .num{text-align:right;font-variant-numeric:tabular-nums}
 .dd{color:#5fe89e;font-weight:600}
@@ -88,7 +88,7 @@ tr:last-child td{border-bottom:none}
 </head>
 <body>
 <h1>价值类因子 SmartBeta 指数对比看板</h1>
-<div style="position:fixed;top:8px;right:12px;background:#38a169;color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.4);z-index:9999">✓ 深色版 v3 · 修复对比度 (2026-07-30)</div><p class="sub">全收益口径 · 数据至 2026-07-24 · 编制日期 2026-07-30 · 作者 广州大耶鸠杰克张</p>
+<div style="position:fixed;top:8px;right:12px;background:#38a169;color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.4);z-index:9999">✓ 深色版 v4 · 修复数字对比度 (2026-07-30)</div><p class="sub">全收益口径 · 数据至 2026-07-24 · 编制日期 2026-07-30 · 作者 广州大耶鸠杰克张</p>
 
 <div class="tabs"><button class="tab-btn active" onclick="switchTab(0)">总览对比</button><button class="tab-btn" onclick="switchTab(1)">国证价值100</button><button class="tab-btn" onclick="switchTab(2)">中证自由现金流</button><button class="tab-btn" onclick="switchTab(3)">中证红利质量</button><button class="tab-btn" onclick="switchTab(4)">国证自由现金流</button><button class="tab-btn" onclick="switchTab(5)">标普500</button><button class="tab-btn" onclick="switchTab(6)">中证全指</button><button class="tab-btn" onclick="switchTab(7)">DGRO 美股红利成..</button><button class="tab-btn" onclick="switchTab(8)">COWZ 美股现金奶..</button></div>
 
@@ -1226,14 +1226,14 @@ function drawMainChart(k, canvas, hoverIdx) {
   var overEdge = lx > W - pad.r - 120;
   var ax = overEdge ? lx - 6 : lx + 6, ta = overEdge ? 'right' : 'left';
   ctx.fillStyle = '#e53e3e'; ctx.beginPath(); ctx.arc(lx, ly, 4, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = '#1a202c'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = ta;
+  ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = ta;
   ctx.fillText(cd.close[n - 1].toLocaleString(), ax, ly - 5);
   ctx.fillStyle = '#8b95a8'; ctx.font = '9px sans-serif'; ctx.textAlign = ta;
   ctx.fillText(D.regression.current_sigma.toFixed(2) + '\u03c3', ax, ly + 9);
   ctx.fillText(cd.dates[n - 1], ax, ly + 22);
   ctx.textBaseline = 'alphabetic';
 
-  ctx.fillStyle = '#1a202c'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'right';
+  ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'right';
   ctx.fillText(D.meta.name + ' \u00b7 CAGR ' + D.regression.cagr_trend + '% \u00b7 R\u00b2=' + D.regression.r_squared, W - pad.r, pad.t - 8);
 
   ctx.fillStyle = '#94a3b8'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
@@ -1458,7 +1458,7 @@ function drawHealthCUSUM(k, canvas) {
   for (var i = 0; i < n; i += stepD) ctx.fillText(dates[i].substring(0, 7), xPos(i), H - 4);
   
   // Current value label
-  ctx.fillStyle = '#1a202c'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'right';
+  ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'right';
   ctx.fillText('CUSUM=' + cusum[n-1].toFixed(1), W - pad.r, pad.t + 10);
 }
 
@@ -1543,7 +1543,7 @@ function drawHealthR2(k, canvas) {
   var lastR2 = null;
   for (var i = n - 1; i >= 0; i--) { if (r2[i] !== null) { lastR2 = r2[i]; break; } }
   if (lastR2 !== null) {
-    ctx.fillStyle = '#1a202c'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'right';
     ctx.fillText('R\u00b2=' + lastR2.toFixed(3), W - pad.r, pad.t + 10);
   }
 }
