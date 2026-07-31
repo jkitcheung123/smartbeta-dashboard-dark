@@ -88,7 +88,7 @@ tr:last-child td{border-bottom:none}
 </head>
 <body>
 <h1>价值类因子 SmartBeta 指数对比看板</h1>
-<div style="position:fixed;top:8px;right:12px;background:#38a169;color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.4);z-index:9999">✓ 深色版 v6 · 图表深色主题+熊市周期高亮 (2026-07-30)</div><p class="sub">全收益口径 · 数据至 2026-07-24 · 编制日期 2026-07-30 · 作者 广州大耶鸠杰克张</p>
+<div style="position:fixed;top:8px;right:12px;background:#38a169;color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.4);z-index:9999">✓ 深色版 v7 · 修复健康度图表坐标轴范围 (2026-07-31)</div><p class="sub">全收益口径 · 数据至 2026-07-24 · 编制日期 2026-07-30 · 作者 广州大耶鸠杰克张</p>
 
 <div class="tabs"><button class="tab-btn active" onclick="switchTab(0)">总览对比</button><button class="tab-btn" onclick="switchTab(1)">国证价值100</button><button class="tab-btn" onclick="switchTab(2)">中证自由现金流</button><button class="tab-btn" onclick="switchTab(3)">中证红利质量</button><button class="tab-btn" onclick="switchTab(4)">国证自由现金流</button><button class="tab-btn" onclick="switchTab(5)">标普500</button><button class="tab-btn" onclick="switchTab(6)">中证全指</button><button class="tab-btn" onclick="switchTab(7)">DGRO 美股红利成..</button><button class="tab-btn" onclick="switchTab(8)">COWZ 美股现金奶..</button></div>
 
@@ -1410,9 +1410,21 @@ function drawHealthCUSUM(k, canvas) {
   var pad = { l: 40, r: 12, t: 16, b: 28 };
   var cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
   
+  // Axis range must include actual CUSUM data, not just the confidence bands
+  var cMin = Infinity, cMax = -Infinity;
+  for (var i = 0; i < n; i++) {
+    if (cusum[i] < cMin) cMin = cusum[i];
+    if (cusum[i] > cMax) cMax = cusum[i];
+  }
   var vMin = -30, vMax = 30;
-  if (upper !== null && lower !== null) { vMin = lower * 1.5; vMax = upper * 1.5; }
-  // Make symmetric
+  if (upper !== null && lower !== null) {
+    vMin = Math.min(lower * 1.5, cMin * 1.1);
+    vMax = Math.max(upper * 1.5, cMax * 1.1);
+  } else {
+    vMin = cMin * 1.1;
+    vMax = cMax * 1.1;
+  }
+  // Make symmetric around zero so positive/negative deviations are comparable
   var absMax = Math.max(Math.abs(vMin), Math.abs(vMax), 5);
   vMin = -absMax; vMax = absMax;
   
@@ -1487,27 +1499,40 @@ function drawHealthR2(k, canvas) {
   var pad = { l: 40, r: 12, t: 16, b: 28 };
   var cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
   
-  function yVal(v) { return pad.t + ch * (1 - (v - 0.4) / 0.6); }  // R\u00b2 range 0.4-1.0
+  // Dynamic Y range: include all actual R2 values with padding; keep top at 1.0
+  var r2Min = Infinity, r2Max = -Infinity;
+  for (var i = 0; i < n; i++) {
+    if (r2[i] === null) continue;
+    if (r2[i] < r2Min) r2Min = r2[i];
+    if (r2[i] > r2Max) r2Max = r2[i];
+  }
+  var yMin = Math.min(0.4, r2Min * 0.95);
+  var yMax = 1.0;
+  function yVal(v) { return pad.t + ch * (1 - (v - yMin) / (yMax - yMin)); }
   function xPos(i) { return pad.l + cw * i / Math.max(n - 1, 1); }
-  
+
   ctx.fillStyle = '#131a2b'; ctx.fillRect(0, 0, W, H);
 
-  // Warning zones
-  ctx.fillStyle = 'rgba(255,107,107,0.10)';
-  ctx.fillRect(pad.l, yVal(0.6), cw, yVal(0.75) - yVal(0.6));
-  ctx.fillStyle = 'rgba(237,137,54,0.10)';
-  ctx.fillRect(pad.l, yVal(0.75), cw, yVal(0.90) - yVal(0.75));
-  
+  // Warning zones (only if thresholds are within view)
+  if (0.60 >= yMin) {
+    ctx.fillStyle = 'rgba(255,107,107,0.10)';
+    ctx.fillRect(pad.l, yVal(0.6), cw, yVal(Math.max(yMin, 0.75)) - yVal(0.6));
+  }
+  if (0.75 >= yMin) {
+    ctx.fillStyle = 'rgba(237,137,54,0.10)';
+    ctx.fillRect(pad.l, yVal(0.75), cw, yVal(Math.max(yMin, 0.90)) - yVal(0.75));
+  }
+
   // Threshold lines
   ctx.strokeStyle = 'rgba(229,62,62,0.25)'; ctx.lineWidth = 0.6; ctx.setLineDash([3, 3]);
-  ctx.beginPath(); ctx.moveTo(pad.l, yVal(0.60)); ctx.lineTo(W - pad.r, yVal(0.60)); ctx.stroke();
+  if (0.60 >= yMin) { ctx.beginPath(); ctx.moveTo(pad.l, yVal(0.60)); ctx.lineTo(W - pad.r, yVal(0.60)); ctx.stroke(); }
   ctx.strokeStyle = 'rgba(221,107,32,0.25)';
-  ctx.beginPath(); ctx.moveTo(pad.l, yVal(0.75)); ctx.lineTo(W - pad.r, yVal(0.75)); ctx.stroke();
+  if (0.75 >= yMin) { ctx.beginPath(); ctx.moveTo(pad.l, yVal(0.75)); ctx.lineTo(W - pad.r, yVal(0.75)); ctx.stroke(); }
   ctx.setLineDash([]);
   ctx.fillStyle = '#ff6b6b'; ctx.font = '8px sans-serif'; ctx.textAlign = 'left';
-  ctx.fillText('0.60', pad.l + 2, yVal(0.60) - 2);
+  if (0.60 >= yMin) ctx.fillText('0.60', pad.l + 2, yVal(0.60) - 2);
   ctx.fillStyle = '#dd6b20';
-  ctx.fillText('0.75', pad.l + 2, yVal(0.75) - 2);
+  if (0.75 >= yMin) ctx.fillText('0.75', pad.l + 2, yVal(0.75) - 2);
   
   // R\u00b2 line
   ctx.strokeStyle = '#3182ce'; ctx.lineWidth = 1.5;
@@ -1530,16 +1555,18 @@ function drawHealthR2(k, canvas) {
     }
     for (var i = n - 1; i >= firstValid; i--) {
       if (r2[i] === null) continue;
-      ctx.lineTo(xPos(i), yVal(0.4));
+      ctx.lineTo(xPos(i), yVal(yMin));
     }
     ctx.closePath(); ctx.fill();
   }
   
-  // Y ticks
+  // Y ticks (dynamic based on yMin..1.0)
   ctx.fillStyle = '#94a3b8'; ctx.font = '8px sans-serif'; ctx.textAlign = 'right';
-  [0.6, 0.7, 0.8, 0.9, 1.0].forEach(function(v) {
+  var yTicks = [];
+  for (var ti = 0; ti <= 4; ti++) yTicks.push(yMin + (1.0 - yMin) * ti / 4);
+  yTicks.forEach(function(v) {
     var y = yVal(v);
-    ctx.fillText(v.toFixed(1), pad.l - 3, y + 3);
+    ctx.fillText(v.toFixed(2), pad.l - 3, y + 3);
   });
   
   // X labels
