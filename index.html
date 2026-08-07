@@ -1465,9 +1465,15 @@ function drawMainChart(k, canvas, hoverIdx) {
 
   ctx.fillStyle = '#8b95a8'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
   var stepD = Math.max(1, Math.ceil(n / 15));
-  for (var i = 0; i < n; i += stepD) ctx.fillText(cd.dates[i].substring(0, 7), xPos(i), H - 6);
+  for (var i = 0; i < n; i += stepD) {
+    // 跳过会与最右端新标签重叠的循环项
+    if (i + stepD > n - 1) continue;
+    ctx.fillText(cd.dates[i].substring(0, 7), xPos(i), H - 6);
+  }
   // 确保最右边显示最新日期标签（右对齐避免被画布边缘裁切）
-  if ((n - 1) % stepD !== 0) { ctx.textAlign = 'right'; ctx.fillText(cd.dates[n - 1].substring(0, 7), W - pad.r, H - 6); ctx.textAlign = 'center'; }
+  ctx.textAlign = 'right';
+  ctx.fillText(cd.dates[n - 1].substring(0, 7), W - pad.r, H - 6);
+  ctx.textAlign = 'center';
 
   // ===== Hover marker & tooltip =====
   if (typeof hoverIdx === 'number' && hoverIdx >= 0 && hoverIdx < n) {
