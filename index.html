@@ -17,7 +17,7 @@ h1{font-size:18px;font-weight:700;color:#e2e8f0;margin-bottom:2px}
 .tab-content[hidden]{display:none}
 .comp-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px;table-layout:fixed;background:#131a2b;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
 .comp-table th{background:#1e2a40;color:#8b95a8;font-weight:600;padding:8px 7px;text-align:center;position:sticky;top:0;font-size:11px;overflow:hidden;text-overflow:ellipsis;border-bottom:2px solid #2a3450}
-.comp-table td{padding:7px 6px;border-bottom:1px solid #1e2a40;vertical-align:middle;overflow:hidden;text-overflow:ellipsis}
+.comp-table td{padding:7px 6px;border-bottom:1px solid #1e2a40;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;color:#e2e8f0}
 .comp-table tr:hover{background:rgba(74,158,255,0.08)}
 .comp-table tr:last-child td{border-bottom:none}
 .comp-table .num{text-align:right;font-variant-numeric:tabular-nums}
@@ -90,7 +90,7 @@ tr:last-child td{border-bottom:none}
 </head>
 <body>
 <h1>价值类因子 SmartBeta 指数对比看板</h1>
-<p class="sub">全收益口径 · 数据至 2026-07-31 · 编制日期 2026-08-03 · 作者 广州大耶鸠杰克张</p>
+<p class="sub">全收益口径 · 数据至 2026-07-31 · 编制日期 2026-08-07 · 作者 广州大耶鸠杰克张</p>
 
 <div class="tabs"><button class="tab-btn active" onclick="switchTab(0)">总览对比</button><button class="tab-btn" onclick="switchTab(1)">国证价值100</button><button class="tab-btn" onclick="switchTab(2)">中证自由现金流</button><button class="tab-btn" onclick="switchTab(3)">中证红利质量</button><button class="tab-btn" onclick="switchTab(4)">国证自由现金流</button><button class="tab-btn" onclick="switchTab(5)">标普500</button><button class="tab-btn" onclick="switchTab(6)">中证全指</button><button class="tab-btn" onclick="switchTab(7)">DGRO 美股红利成..</button><button class="tab-btn" onclick="switchTab(8)">COWZ 美股现金奶..</button></div>
 
@@ -1206,7 +1206,7 @@ tr:last-child td{border-bottom:none}
 
 <div class="footer">
   数据来源: AKShare · 回归方法: log(close) vs day_num 线性回归 · 动态Rf: 10年期国债收益率均值 · 估值日期 2026-07-31<br>
-  编制日期: 2026-08-03 · 作者: 广州大耶鸠杰克张 · 涨=红 跌=绿（中国市场惯例） · WorkBuddy
+  编制日期: 2026-08-07 · 作者: 广州大耶鸠杰克张 · 涨=红 跌=绿（中国市场惯例） · WorkBuddy
 </div>
 
 <script>
@@ -1466,6 +1466,8 @@ function drawMainChart(k, canvas, hoverIdx) {
   ctx.fillStyle = '#8b95a8'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
   var stepD = Math.max(1, Math.ceil(n / 15));
   for (var i = 0; i < n; i += stepD) ctx.fillText(cd.dates[i].substring(0, 7), xPos(i), H - 6);
+  // 确保最右边显示最新日期标签
+  if ((n - 1) % stepD !== 0) ctx.fillText(cd.dates[n - 1].substring(0, 7), xPos(n - 1), H - 6);
 
   // ===== Hover marker & tooltip =====
   if (typeof hoverIdx === 'number' && hoverIdx >= 0 && hoverIdx < n) {
